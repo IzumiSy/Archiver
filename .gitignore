@@ -1,0 +1,5 @@
+makefile
+archive.out
+*.o
+index.txt
+makedummy.sh
