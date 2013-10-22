@@ -1,1 +1,3 @@
-Under construction
+
+A simple archiver written in C++
+
