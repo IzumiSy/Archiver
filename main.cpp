@@ -4,7 +4,7 @@
  * 
  *  File: main.cpp
  *  Version: 0.1
- *  Author: JsZ <beetle-noise@gmx.com>
+ *  Author: IzumiSy <beetle-noise@gmx.com>
  *  Create: 2011/9/21
  * 
  * ------------------------------------- */
