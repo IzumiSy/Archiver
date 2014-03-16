@@ -2,7 +2,7 @@
 archiver: 
 	g++ -Wall -o archiver main.cpp
 
-.PHONY: clean
+.PHONY: clean dummy
 clean:
 	rm archiver dummy1 dummy2 dummy3
 dummy:
