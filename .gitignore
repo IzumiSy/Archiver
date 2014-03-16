@@ -1,5 +1,2 @@
-makefile
-archive.out
-*.o
+archiver
 index.txt
-makedummy.sh
