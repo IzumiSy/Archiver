@@ -73,9 +73,9 @@ void put32(UCHAR *p, int i)
  * ------------------------ */
 void usage(void)
 {
-	puts("sarchive [ Simple Archiver version 0.1 ]");
-	puts("Copyright (C) 2011 JsZ <beetle-noise@gmx.com>");
-	puts(" usage: >sarchive file1 file2 ...");
+	puts("[ Simple Archiver version 0.1 ]");
+	puts("Copyright (C) 2011 IzumiSy <beetle-noise@gmx.com>");
+	puts(" usage: >archiver file1 file2 ...");
 	exit(0);
 }
 
