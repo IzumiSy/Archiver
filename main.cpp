@@ -72,12 +72,9 @@ void createIndexFile(void)
 int main(int argc, char *argv[])
 {
 	int i, var0, files;
-	time_t now;
-	size_t fsize, size, current;
+	size_t fsize, current;
 	string err0, optbuf, outputname;
 	UCHAR *buf;
-	char str0[64];
-	bool nonindex;
 	
 	ostringstream osstream;
 	ifstream in;
@@ -85,11 +82,9 @@ int main(int argc, char *argv[])
 	vector<string> errs;
 	vector<struct FILEDATA> filedats;
 	struct FILEDATA base;
-	struct tm *date;
 	
 	outputname = ARCH_NAME;
 	current = 0;
-	nonindex = false;
 	
 	if (argc < 2) {
 		putUsage();
