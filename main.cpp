@@ -30,12 +30,6 @@ static const char sign[] = "SaRc";
 typedef unsigned long ULONG;
 typedef unsigned char UCHAR;
 
-/* ----------------------------- 
- * 
- *	A stricture of a file data
- *	(72byte)
- * 
- * -------------------------- */
 struct FILEDATA
 {
 	string	filename;
@@ -43,21 +37,11 @@ struct FILEDATA
 	ULONG	add;
 };
 
-/* ---------------------------
- * 
- *	     Writing header. 
- * 
- * ------------------------ */
 int get32(const UCHAR *p)
 {
 	return p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
 }
 
-/* ---------------------------
- * 
- *	     Reading header.
- * 
- * ------------------------ */
 void put32(UCHAR *p, int i)
 {
 	p[0] =  i        & 0xff;
@@ -66,24 +50,25 @@ void put32(UCHAR *p, int i)
 	p[3] = (i >> 24) & 0xff;
 }
 
-/* ---------------------------
- * 
- *	       Put usage.
- * 
- * ------------------------ */
-void usage(void)
+void putUsage(void)
 {
 	puts("[ Simple Archiver version 0.1 ]");
 	puts("Copyright (C) 2011 IzumiSy <beetle-noise@gmx.com>");
 	puts(" usage: >archiver file1 file2 ...");
 	exit(0);
+} 
+
+void createIndexFile(void)
+{
+    ofstream fp;
+
+    fp.open(INDEX_NAME, ios::out | ios::trunc);
+	
+    // Do something
+
+	fp.close();
 }
 
-/* ---------------------------
- * 
- *	          Main
- * 
- * ------------------------ */
 int main(int argc, char *argv[])
 {
 	int i, var0, files;
@@ -106,11 +91,8 @@ int main(int argc, char *argv[])
 	current = 0;
 	nonindex = false;
 	
-	/*
-	 *	Put usage.
-	 */
 	if (argc < 2) {
-		usage();
+		putUsage();
 	}
 
 	/*
@@ -155,32 +137,6 @@ int main(int argc, char *argv[])
 			in.close();
 		}
 	}
-
-	/*
-	 *	Creates a index file.
-	 */
-	indexfile.open(INDEX_NAME, ios::out | ios::trunc);
-	if (indexfile.fail()) {
-		errs.push_back((new string("Index file is not created : "))->append(INDEX_NAME));
-	}
-	time(&now);
-	date = localtime(&now);
-	indexfile << "Archived file index (";
-	sprintf(str0, "Date: %04d/%02d/%02d %02d:%02d",
-			date->tm_year + 1900, date->tm_mon + 1,
-			date->tm_mday, date->tm_hour, date->tm_min);
-	indexfile << str0 << ")" << endl;
-	indexfile << "Output: " << outputname << endl;
-
-	size = filedats.size();
-	indexfile << endl << "[ " << size << " files are contented ]" << endl;
-	for (i = 0;i < (int)size;i++) {
-		osstream << filedats.at(i).filename << " (" << filedats.at(i).fsize << ")";
-		indexfile << osstream.str() << endl;
-		osstream.str("");
-	}
-
-	indexfile.close();
 
 	try {
 
