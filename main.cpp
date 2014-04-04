@@ -63,10 +63,10 @@ void createIndexFile(void)
     ofstream fp;
 
     fp.open(INDEX_NAME, ios::out | ios::trunc);
-	
+
     // Do something
 
-	fp.close();
+    fp.close();
 }
 
 int main(int argc, char *argv[])
@@ -90,10 +90,8 @@ int main(int argc, char *argv[])
 		putUsage();
 	}
 
-	/*
-	 *  Names it if there is a specified name of the achieve file.
-	 *  And set a file name string to "outputname"
-	 */
+    // Names it if there is a specified name of the achieve file.
+    // And set a file name string to "outputname"
 	for (i = 1;i < argc;i++) {
 		optbuf = argv[i];
 		if (optbuf.find_first_of("-o", 0) == 0) {
@@ -103,10 +101,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/*
-	 * 	Parses a command line and Pushes each data to a file list.
-	 *	If some errors occur, store them into container. 
-	 */
+    // Parses a command line and Pushes each data to a file list.
+    // If some errors occur, store them into container. 
 	for (i = 1;i < argc;i++) {
 		if (argv[i] != NULL) {
 			in.open(argv[i], ios::in | ios::binary);
@@ -115,15 +111,13 @@ int main(int argc, char *argv[])
 				continue;
 			}
 			
-			/* Gets file size. */
+			// Gets file size.
 			fsize = in.seekg(0, ios::end).tellg();
 			in.seekg(0, ios::beg);
 			
-			/*
-			 *	Sets file data.
-			 *	Pushs it to the file list.
-			 */
-			base.filename.assign(argv[i]);
+            // Sets file data.
+            // Pushs it to the file list.
+		    base.filename.assign(argv[i]);
 			base.fsize = fsize;
 			base.add += fsize;
 			current += base.fsize;
@@ -135,15 +129,11 @@ int main(int argc, char *argv[])
 
 	try {
 
-		/*
-		 *	Put errors and exit if there are.
-		 */
+        // Put errors and exit if there are.
 		if (!errs.empty())
 			throw errs;
 
-		/*
-		 *	Display parsed datas.
-		 */
+        // Display parsed datas.
 		if (!filedats.empty()) {
 			var0 = filedats.size();
 			cout << "contents:";
@@ -153,10 +143,8 @@ int main(int argc, char *argv[])
 			cout << endl;
 		}
 		
-		/*
-		 *	Make a header and write it to an archived file.
-		 *  A default file name is "archive.out"
-		 */
+        // Make a header and write it to an archived file.
+        // A default file name is "archive.out"
 		out.open(outputname.c_str(), ios::binary | ios::out | ios::trunc);
 		if (out.fail()) 
 			throw ("File open error : Archive");
@@ -165,11 +153,9 @@ int main(int argc, char *argv[])
 		if (!buf) 
 			throw ("Out of memory : Archive");
 		
-		/*
-		 *  Makes a file header and write it.
-		 *	sign: A File Signature
-		 *	files: The number of files which is archived.
-		 */
+		// Makes a file header and write it.
+		// sign: A File Signature
+		// files: The number of files which is archived.
 		for (i = 0;i < 4;i++) { 
 			buf[i] = sign[i];
 		}
