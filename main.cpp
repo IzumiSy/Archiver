@@ -101,33 +101,26 @@ int main(int argc, char *argv[])
 		}
 	}
 
-    // Parses a command line and Pushes each data to a file list.
-    // If some errors occur, store them into container. 
-	for (i = 1;i < argc;i++) {
-		if (argv[i] != NULL) {
-			in.open(argv[i], ios::in | ios::binary);
-			if (in.fail()) {
-				errs.push_back((new string("File open error : "))->append(argv[i]));
-				continue;
-			}
-			
-			// Gets file size.
-			fsize = in.seekg(0, ios::end).tellg();
-			in.seekg(0, ios::beg);
-			
-            // Sets file data.
-            // Pushs it to the file list.
-		    base.filename.assign(argv[i]);
-			base.fsize = fsize;
-			base.add += fsize;
-			current += base.fsize;
-			filedats.push_back(base);
-			
-			in.close();
-		}
-	}
+    try {
 
-	try {
+        // Parses a command line and gets size and name of each file to add.
+        // And stores them to the file list.
+	    for (i = 1;i < argc;i++) {
+		    if (argv[i] != NULL) {
+			    in.open(argv[i], ios::in | ios::binary);
+			    if (in.fail()) {
+				    throw (new string("File open error : "))->append(argv[i]);
+			    }
+			    fsize = in.seekg(0, ios::end).tellg();
+			    in.seekg(0, ios::beg);
+    		    base.filename.assign(argv[i]);
+    			base.fsize = fsize;
+    			base.add += fsize;
+    			current += base.fsize;
+    			filedats.push_back(base);
+    			in.close();
+    		}
+    	}
 
         // Put errors and exit if there are.
 		if (!errs.empty())
