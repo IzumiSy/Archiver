@@ -71,7 +71,7 @@ void createIndexFile(void)
 
 int main(int argc, char *argv[])
 {
-	int i, var0, files;
+	int i, files;
 	size_t fsize, current;
 	string err0, optbuf, outputname;
 	UCHAR *buf;
@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
 			    if (in.fail()) {
 				    throw (new string("File open error : "))->append(argv[i]);
 			    }
-			    fsize = in.seekg(0, ios::end).tellg();
-			    in.seekg(0, ios::beg);
+    		    fsize = in.seekg(0, ios::end).tellg();
+    		    in.seekg(0, ios::beg);
     		    base.filename.assign(argv[i]);
     			base.fsize = fsize;
     			base.add += fsize;
@@ -122,19 +122,15 @@ int main(int argc, char *argv[])
     		}
     	}
 
-        // Put errors and exit if there are.
-		if (!errs.empty())
-			throw errs;
-
-        // Display parsed datas.
-		if (!filedats.empty()) {
-			var0 = filedats.size();
-			cout << "contents:";
-			for (i = 0;i < var0;i++) {
-				cout << " " << filedats.at(i).filename;
-			}
-			cout << endl;
+		if (filedats.empty()) {
+            throw ("Unexpected error");   
+        }
+        
+        // Display name of files to add
+		for (i = 0;i < (signed)filedats.size();i++) {
+			cout << filedats.at(i).filename << endl;
 		}
+        cout << " -> " << outputname << endl;
 		
         // Make a header and write it to an archived file.
         // A default file name is "archive.out"
