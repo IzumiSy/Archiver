@@ -1,4 +1,4 @@
-# Simple Archiver
+# Archiver
 Super-simple archiver written in C++
 
 ## Build
