@@ -18,6 +18,10 @@
 #include <time.h>
 using namespace std;
 
+#include "types.h"
+#include "misc.h"
+#include "usage.h"
+
 #define MAX_SIZE    4 * 1024 * 1024
 #define MAX_FILES   100
 #define MAX_HEADSIZ 8
@@ -26,43 +30,6 @@ using namespace std;
 #define INDEX_NAME  "index.txt"
 
 static const char sign[] = "SaRc";
-
-typedef unsigned long ULONG;
-typedef unsigned char UCHAR;
-
-struct FILEDATA
-{
-    string filename;
-    ULONG  fsize;
-    ULONG  add;
-};
-
-struct OPTIONS
-{
-    string outputFileName;
-    vector<string> inputFilePaths;
-};
-
-int get32(const UCHAR *p)
-{
-    return p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
-}
-
-void put32(UCHAR *p, int i)
-{
-    p[0] =  i        & 0xff;
-    p[1] = (i >>  8) & 0xff;
-    p[2] = (i >> 16) & 0xff;
-    p[3] = (i >> 24) & 0xff;
-}
-
-void putUsage(void)
-{
-    puts("[ Simple Archiver version 0.1 ]");
-    puts("Copyright (C) 2011 IzumiSy <beetle-noise@gmx.com>");
-    puts(" usage: archiver [ -o ] file1 file2 ...");
-    exit(0);
-}
 
 vector<struct FILEDATA> parseInputFiles(vector<string> inputFilePaths)
 {
