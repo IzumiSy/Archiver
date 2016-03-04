@@ -29,7 +29,7 @@ using namespace std;
 #define ARCH_NAME   "archive.out"
 #define INDEX_NAME  "index.txt"
 
-static const char sign[] = "SaRc";
+static const char headerSignature[] = "SaRc";
 
 vector<struct FILEDATA> parseInputFiles(vector<string> inputFilePaths)
 {
@@ -88,10 +88,9 @@ struct OPTIONS parseExecArguments(int argc, char *argv[])
 
 void writeArchiveFile(string outputFileName, vector<struct FILEDATA> inputFiles)
 {
-    int i, files;
-    int inputFileAmount = inputFiles.size();
+    int i, inputFileAmount = inputFiles.size();
     ofstream out;
-    UCHAR *buf;
+    UCHAR *dataBuffer;
 
     // Make a header and write it to an archived file.
     // A default file name is "archive.out"
@@ -100,25 +99,21 @@ void writeArchiveFile(string outputFileName, vector<struct FILEDATA> inputFiles)
         throw ("File open error : Archive");
     }
 
-    if (!(buf = (UCHAR *)malloc(MAX_SIZE))) {
+    if (!(dataBuffer = (UCHAR *)malloc(MAX_SIZE))) {
         throw ("Out of memory : Archive");
     }
 
-    // Makes a file header and write it.
-    // sign: A File Signature
-    // files: The number of files which is archived.
     for (i = 0;i < 4;i++) {
-        buf[i] = sign[i];
+        dataBuffer[i] = headerSignature[i];
     }
-    files = inputFileAmount - 1;
-    put32(buf, files);
-    out << buf;
+    put32(dataBuffer, inputFileAmount - 1);
+    out << dataBuffer;
 
     // TODO
     // Write contents of input files into the archive file
     //
 
-    free(buf);
+    free(dataBuffer);
     out.close();
 }
 
