@@ -51,10 +51,12 @@ vector<struct FILEDATA> parseInputFiles(vector<string> inputFilePaths)
         }
         fileSize = in.seekg(0, ios::end).tellg();
         in.seekg(0, ios::beg);
+
         base.filename.assign(filenameBuffer);
         base.fsize = fileSize;
         base.add += fileSize;
         current += base.fsize;
+
         fileDataArray.push_back(base);
         in.close();
     }
@@ -134,9 +136,11 @@ int main(int argc, char *argv[])
 
     try {
         fileData = parseInputFiles(options.inputFilePaths);
+
         if (fileData.empty()) {
             throw ("Unexpected error");
         }
+
         writeArchiveFile(options.outputFileName, fileData);
     } catch (string reason) {
         cout << reason << endl;
