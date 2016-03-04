@@ -4,5 +4,5 @@ archiver:
 
 .PHONY: clean
 clean:
-	rm archiver dummy1 dummy2 dummy3
+	rm archiver
 
