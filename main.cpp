@@ -99,8 +99,8 @@ vector<struct FILEDATA> parseInputFiles(vector<string> inputFilePaths)
 // and input files as arguments.
 struct OPTIONS parseExecArguments(int argc, char *argv[])
 {
-    struct OPTIONS options;
     int i;
+    struct OPTIONS options;
     string argumentBuffer;
     string outputFileName;
 
@@ -169,11 +169,9 @@ int main(int argc, char *argv[])
 
     try {
         fileData = parseInputFiles(options.inputFilePaths);
-
         if (fileData.empty()) {
             throw ("Unexpected error");
         }
-
         writeArchiveFile(options.outputFileName, fileData);
     } catch (string reason) {
         cout << reason << endl;
