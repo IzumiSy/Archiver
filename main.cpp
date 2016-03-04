@@ -112,8 +112,11 @@ void writeArchiveFile(string outputFileName, vector<struct FILEDATA> inputFiles)
     }
     files = inputFileAmount - 1;
     put32(buf, files);
-
     out << buf;
+
+    // TODO
+    // Write contents of input files into the archive file
+    //
 
     free(buf);
     out.close();
