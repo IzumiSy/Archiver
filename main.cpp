@@ -32,9 +32,15 @@ typedef unsigned char UCHAR;
 
 struct FILEDATA
 {
-    string  filename;
-    ULONG   fsize;
-    ULONG   add;
+    string filename;
+    ULONG  fsize;
+    ULONG  add;
+};
+
+struct OPTIONS
+{
+    string outputFileName;
+    vector<string> inputFilePaths;
 };
 
 int get32(const UCHAR *p)
@@ -54,113 +60,124 @@ void putUsage(void)
 {
     puts("[ Simple Archiver version 0.1 ]");
     puts("Copyright (C) 2011 IzumiSy <beetle-noise@gmx.com>");
-    puts(" usage: archiver file1 file2 ...");
+    puts(" usage: archiver [ -o ] file1 file2 ...");
     exit(0);
 }
 
-void createIndexFile(void)
+vector<struct FILEDATA> parseInputFiles(vector<string> inputFilePaths)
 {
-    ofstream fp;
+    int i;
+    int filesLen = inputFilePaths.size();
+    size_t fileSize, current;
+    string filenameBuffer;
+    ifstream in;
 
-    fp.open(INDEX_NAME, ios::out | ios::trunc);
+    struct FILEDATA base;
+    vector<struct FILEDATA> fileDataArray;
 
-    // Do something
+    current = 0;
+    for (i = 0;i < filesLen;i++) {
+        filenameBuffer = inputFilePaths.at(i);
+        in.open(filenameBuffer, ios::in | ios::binary);
+        if (in.fail()) {
+            throw (new string("File open error : "))->append(filenameBuffer);
+        }
+        fileSize = in.seekg(0, ios::end).tellg();
+        in.seekg(0, ios::beg);
+        base.filename.assign(filenameBuffer);
+        base.fsize = fileSize;
+        base.add += fileSize;
+        current += base.fsize;
+        fileDataArray.push_back(base);
+        in.close();
+    }
 
-    fp.close();
+    return fileDataArray;
+}
+
+// Detects "-o" option that specifies output file name
+// and input files as arguments.
+struct OPTIONS parseExecArguments(int argc, char *argv[])
+{
+    struct OPTIONS options;
+    int i;
+    string argumentBuffer;
+    string outputFileName;
+
+    options.outputFileName = ARCH_NAME;
+
+    for (i = 1;i < argc;i++) {
+        argumentBuffer = argv[i];
+        if (argumentBuffer.find_first_of("-o", 0) == 0) {
+            options.outputFileName = argumentBuffer.substr(2);
+            argv[i] = NULL;
+        } else {
+            options.inputFilePaths.push_back(argumentBuffer);
+        }
+    }
+
+    return options;
+}
+
+void writeArchiveFile(string outputFileName, vector<struct FILEDATA> inputFiles)
+{
+    int i, files;
+    int inputFileAmount = inputFiles.size();
+    ofstream out;
+    UCHAR *buf;
+
+    // Make a header and write it to an archived file.
+    // A default file name is "archive.out"
+    out.open(outputFileName.c_str(), ios::binary | ios::out | ios::trunc);
+    if (out.fail()) {
+        throw ("File open error : Archive");
+    }
+
+    if (!(buf = (UCHAR *)malloc(MAX_SIZE))) {
+        throw ("Out of memory : Archive");
+    }
+
+    // Makes a file header and write it.
+    // sign: A File Signature
+    // files: The number of files which is archived.
+    for (i = 0;i < 4;i++) {
+        buf[i] = sign[i];
+    }
+    files = inputFileAmount - 1;
+    put32(buf, files);
+
+    out << buf;
+
+    free(buf);
+    out.close();
 }
 
 int main(int argc, char *argv[])
 {
-    int i, files;
-    size_t fsize, current;
-    string err0, optbuf, outputname;
-    UCHAR *buf;
-
-    ostringstream osstream;
-    ifstream in;
-    ofstream out, indexfile;
-    vector<string> errs;
-    vector<struct FILEDATA> filedats;
-    struct FILEDATA base;
-
-    outputname = ARCH_NAME;
-    current = 0;
-
     if (argc < 2) {
         putUsage();
     }
 
-    // Names it if there is a specified name of the achieve file.
-    // And set a file name string to "outputname"
-    for (i = 1;i < argc;i++) {
-        optbuf = argv[i];
-        if (optbuf.find_first_of("-o", 0) == 0) {
-            outputname = optbuf.substr(2);
-            cout << "output: " << outputname << endl;
-            argv[i] = 0;
-        }
+    struct OPTIONS options;
+    vector<struct FILEDATA> fileData;
+
+    options = parseExecArguments(argc, argv);
+    if (options.inputFilePaths.size() <= 0) {
+        cout << "No input files spcified" << endl;
+        putUsage();
     }
 
     try {
+        fileData = parseInputFiles(options.inputFilePaths);
 
-        // Parses a command line and gets size and name of each file to add.
-        // And stores them to the file list.
-        for (i = 1;i < argc;i++) {
-            if (argv[i] != NULL) {
-                in.open(argv[i], ios::in | ios::binary);
-                if (in.fail()) {
-                    throw (new string("File open error : "))->append(argv[i]);
-                }
-                fsize = in.seekg(0, ios::end).tellg();
-                in.seekg(0, ios::beg);
-                base.filename.assign(argv[i]);
-                base.fsize = fsize;
-                base.add += fsize;
-                current += base.fsize;
-                filedats.push_back(base);
-                in.close();
-            }
-        }
-
-        if (filedats.empty()) {
+        if (fileData.empty()) {
             throw ("Unexpected error");
         }
 
-        // Display name of files to add
-        for (i = 0;i < (signed)filedats.size();i++) {
-            cout << filedats.at(i).filename << endl;
-        }
-        cout << " -> " << outputname << endl;
-
-        // Make a header and write it to an archived file.
-        // A default file name is "archive.out"
-        out.open(outputname.c_str(), ios::binary | ios::out | ios::trunc);
-        if (out.fail())
-            throw ("File open error : Archive");
-
-        buf = (UCHAR *)malloc(MAX_SIZE);
-        if (!buf)
-            throw ("Out of memory : Archive");
-
-        // Makes a file header and write it.
-        // sign: A File Signature
-        // files: The number of files which is archived.
-        for (i = 0;i < 4;i++) {
-            buf[i] = sign[i];
-        }
-        files = argc - 1;
-        put32(buf, files);
-
-        out << buf;
-
-        free(buf);
-        out.close();
-
-    } catch (vector<string> reason) {
-        for (i = 0;i < (int)reason.size();i++) {
-            cout << reason.at(i) << endl;
-        }
+        writeArchiveFile(options.outputFileName, fileData);
     } catch (string reason) {
         cout << reason << endl;
     }
+
+    return 0;
 }
